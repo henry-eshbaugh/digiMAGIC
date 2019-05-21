@@ -1,0 +1,6 @@
+* feedback logic - must have backoff signal /and/ conversion.
+  The backoff signal from each cycle is added the averaged
+  conversions at the /end/ of that cycle.
+* Serial I/O.
+* SPI interface for ADC/DAC.
+* Boot - switching correctly to extern 25MHz crystal.
