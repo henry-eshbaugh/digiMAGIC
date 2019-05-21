@@ -1,9 +1,9 @@
 # digiMAGIC: a digitally-compensated anisotropic magnetoresistance magnetometer
 
-This GitHub repo hosts the firmware for my MEng thesis project at Imperial College London.
+This GitHub repo hosts the firmware for my MEng thesis with the Space Magnetometer Laboratory in the Department of Physics at Imperial College London.
 It is a magnetometer, using the HMC1001 strips from Honeywell, that is digitally-compensated,
 leveraging DSP techniques in the acquisition of magnetometer samples, and using these samples
-to back off the field at the sensor by driving an offset coil.
+to back off the field at the sensor by driving an offset coil. Readout is done over a USB interface.
 
 ## Theoretical background
 
@@ -76,17 +76,19 @@ On Linux and Mac OS, the raw serial interface can be tapped
 with `screen`. On Windows, PuTTY is recommended. The PySerial
 library is convenient for writing driver scripts.
 
+All packets, both in and out, must end with a newline (`'\n'`) character. A carriage-return + newline sequence (`"\r\n"`) terminates all packets from the magnetometer.
+
 ### digiMAGIC outputs
 
 Various packets are output; they are prefixed with various ASCII
 lowercase letters.
 
-| Letter | Packet Type  | Structure                                            |
-|--------|--------------|------------------------------------------------------|
-| S      | Science      | %d, %d - instrument time (ms), field conversion (EU) | 
-| D      | Debug        | ASCII string                                         |
-| H      | Housekeeping | ASCII string                                         |    
-| E      | Error        | ASCII string                                         |
+| Letter | Packet Type  | Structure                                                                |
+|--------|--------------|--------------------------------------------------------------------------|
+| S      | Science      | ASCII string "%d, %d", resp. instrument time (ms), field conversion (EU)  | 
+| D      | Debug        | ASCII string                                                             |
+| H      | Housekeeping | ASCII string                                                             |    
+| E      | Error        | ASCII string                                                             |                    
 
 Helper scripts are provided for serial communication and real-time graphing via `gnuplot`.
 
@@ -94,9 +96,18 @@ Helper scripts are provided for serial communication and real-time graphing via 
 
 Commands are supported to alter the functionality of digiMAGIC. They are summarised here.
 
-| Command | Argument | Function |
-|---------|----------|----------|
-| DECIM   | integer  | 
+| Command  | Argument | Function |
+|----------|----------|-----------------------------------------------------------|
+| FLIPRATE | integer  | Number of ADC conversions averaged per wavelet coefficient. |
+| DECIM    | integer  | Number of wavelet coefficients averaged per sensor readout  |
+
+More precisely, if `FLIPRATE` is `F`, and DECIM is `D`, readout will be at `2^(20-(F+D))` Hz.
+
+Example valid serial commands are
+
+    FLIPRATE 6
+    DECIM 2
+    
 
 ## Project structure
 
